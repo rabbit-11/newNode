@@ -1,0 +1,50 @@
+
+/* ---------------------------------------------
+            * 修正滚动条的样式 *
+---------------------------------------------*/
+::-webkit-scrollbar {
+    width: 4px;
+    height: 4px;
+}
+::-webkit-scrollbar-thumb{
+    border-radius: 2px;
+    box-shadow: inset 0 0 2px rgba(0, 0, 0, 0.2);
+    background: rgba(158, 158, 158, 0.4);
+
+    &:hover {
+        background: rgba(158, 158, 158, 0.6);
+    }
+}
+// /* ---------------------------------------------
+//             * 修正每个页面高度适应屏幕 *
+// ---------------------------------------------*/
+
+.single-page-con {
+    & > .single-page {
+        width: 100%;
+        height: 100%;
+        margin: 0!important;
+        & > .page-container {
+            height: 100%;            
+            & > div{
+                height: 100%;
+            }
+        }
+    } 
+}
+
+.iconfont {
+    @include size(1em,1em);
+}
+.icon-experiment {
+    @include bg-img("~@/assets/images/icon/experiment.svg");
+}
+.icon-indicator {
+    @include bg-img("~@/assets/images/icon/indicator.svg");
+}
+.icon-algorithm {
+    @include bg-img("~@/assets/images/icon/algorithm.svg");
+}
+.icon-ddcat {
+    @include bg-img("~@/assets/images/icon/ddcat.svg");
+}

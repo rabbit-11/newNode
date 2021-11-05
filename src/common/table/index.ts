@@ -1,4 +1,3 @@
-import * as echarts from 'echarts'
 
 //属性列
 class PropertyColumn {
@@ -22,31 +21,28 @@ class Select extends PropertyColumn {
 
 // Url列
 class UrlColumn extends Select {
-    public data: Array<string>
-    public isEdit: Array<boolean>
-    public filterArray: Array<number>
+    public data: Array<string>;
+    public isEdit: Array<boolean>;
+    public filter: textFilter;
 
     constructor(name: string) {
         super(name);
         this.data = [];
         this.isEdit = [];
-        this.filterArray = [];
+        this.filter = new textFilter();
     }
 
     public addRow(seq?: number | string, text?: string) {
         if(typeof seq === "number") {
-            this.filterArray.push(this.data.length);
             this.data.splice(seq, 0, text ? text : "");
-            this.isEdit.splice(seq, 0, !this.test(text));
+            this.isEdit.splice(seq, 0, !this.test(text ? text : ""));
             
         }
         else if(typeof seq === "string"){
-            this.filterArray.push(this.data.length);
             this.data.push(seq);
             this.isEdit.push(!this.test(seq));
         }
         else {
-            this.filterArray.push(this.data.length);
             this.data.push("");
             this.isEdit.push(true);
         }
@@ -58,10 +54,10 @@ class UrlColumn extends Select {
     }
 
     public editRow(seq: number) {
-        this.isEdit[seq] = this.test(this.data[seq]) ? !this.isEdit[seq] : this.isEdit[seq];
+        this.isEdit[seq] = !this.test(this.data[seq]);
     }
 
-    private test(url) {
+    private test(url: string) {
         const strRegex = "^((https|http)?://)"
         + "?(([0-9a-z_!~*'().&=+$%-]+: )?[0-9a-z_!~*'().&=+$%-]+@)?" //ftp的user@
         // eslint-disable-next-line no-useless-escape
@@ -79,8 +75,23 @@ class UrlColumn extends Select {
         return re.test(url);
     }
 
-    public filter() {
-
+    groupResult(): Map<string, Array<number>> {
+        const result = new Map<string, Array<number>>();
+        result.set("空",[]);
+        const data = this.filter.filterResult(this.data);
+        data.forEach(rowIndex => {
+            if (result.has(this.data[rowIndex])) {
+                result.get(this.data[rowIndex]).push(rowIndex);
+            }
+            else if(this.data[rowIndex] === ""){
+                result.get("空").push(rowIndex);
+            }
+            else {
+                result.set(this.data[rowIndex], [rowIndex]);
+            }
+            
+        })
+        return result;
     }
 
 }
@@ -88,39 +99,121 @@ class UrlColumn extends Select {
 // email列
 class EmailColumn extends Select {
     public data: Array<string>
+    public isEmail: Array<boolean>
 
     constructor(name: string) {
         super(name);
         this.data = [];
+        this.isEmail = [];
     }
 
     public addRow(seq?: number | string, text?: string) {
         if(typeof seq === "number") {
             this.data.splice(seq, 0, text ? text : "");
+            this.isEmail.splice(seq, 0, this.test(text ? text : ""));
         }
         else if(typeof seq === "string"){
             this.data.push(seq);
+            this.isEmail.push(this.test(seq));
         }
         else {
             this.data.push("");
+            this.isEmail.push(false);
         }
     }
 
     public deleteRow(seq: number) {
         if(seq) {
             this.data.splice(seq, 1);
+            this.isEmail.splice(seq, 1);
         }
     }
 
-    private test(email) {
+    public editRow(seq: number) {
+        this.isEmail[seq] = this.test(this.data[seq]);
+    }
+
+    private test(email: string) {
         // eslint-disable-next-line no-useless-escape
         const strRegex = /^([A-Za-z0-9_\-\.])+\@([A-Za-z0-9_\-\.])+\.([A-Za-z]{2,4})$/
         const re = new RegExp(strRegex);
         return re.test(email);
     }
 
-    
+}
 
+class textFilter {
+    public relation: string;// and|or
+    public filters: Array<Array<string>>; //filters数组每一项代表一个筛选器，筛选器第一项代表筛选器类型，第二项代表筛选器数据
+
+    public constructor() {
+        this.relation = "and",
+            this.filters = new Array<Array<string>>();
+    }
+    //筛选器编辑
+    public addFilter(type?: string, text?: string) {
+        if (type && text) {
+            this.filters.push([type, text])
+        }
+        else {
+            this.filters.push(["包含", ""])
+        }
+    }
+    public deleteFilter(ref: number|string) {
+        if (typeof ref == "number") { //ref为数组下标：根据数组下标删除
+            this.filters.splice(ref, 1)
+        } else { //ref为tag名称：根据标签名字删除
+            // this.filters = this.filters.filter(value => value[1] !== ref)
+            for (let i = 0; i < this.filters.length; i++) {
+                if (this.filters[i][1] == ref) {
+                    this.filters.splice(i, 1);
+                }
+            }
+        }
+    }
+    public editFilter(seq: number, filter: string) {
+        this.filters.splice(seq, 1, [this.filters[seq][0], filter])
+    }
+
+    //筛选器查找
+    public andFilter(filterArray: Array<Array<number>>): Array<number> {
+        let a = filterArray[0];
+        filterArray.forEach(item => {
+            a = a.filter(x => item.indexOf(x) !== -1);
+        });
+        return a;
+    }
+    public orFilter(filterArray: Array<Array<number>>): Array<number> {
+        const a = new Set<number>()
+        filterArray.forEach(item => {
+            item.forEach(item => {
+                a.add(item);
+            })
+        })
+        return Array.from(a);
+    }
+    public filterResult(data: Array<string>): Array<number> {
+        //无筛选器:直接按顺序返回原有数组
+        const result = new Array<number>();
+        if (this.filters.length == 0) {
+            data.forEach((value, index, array) => {
+                result.push(index)
+            })
+            return result;
+        }
+        //有筛选器:求每个筛选器对应的数组，然后进行or或and的合并
+        const filterArray = new Array<Array<number>>();
+        this.filters.forEach((filter, filterSeq) => {
+            filterArray.push(new Array<number>());
+            data.forEach((str, index) => {
+                if ((str.indexOf(filter[1]) !== -1 && filter[0] === "包含") || (str.indexOf(filter[1]) === -1 && filter[0] === "不包含")) {
+                    filterArray[filterSeq].push(index)
+                }
+            })
+        })
+        return this.relation == "and" ? this.andFilter(filterArray) : this.orFilter(filterArray)
+    }
+    
 }
 
 //多选列
@@ -186,103 +279,31 @@ class MultiSelectColumn extends MultiSelect {
     }
 
     //四：绘图 频次绘图 →只有放在参数里参会响应式的变化
-    drawData() {
-        const a: Map<string, number> = new Map();
-        this.span.forEach(function (tag) {
-            a.set(tag, 0)
-        })
+    // drawData() {
+    //     const a: Map<string, number> = new Map();
+    //     this.span.forEach(function (tag) {
+    //         a.set(tag, 0)
+    //     })
 
-        this.data.forEach(function (tagset) {
-            tagset.forEach(function (tag) {
-                a.set(tag, a.get(tag) + 1) //一定定义过
-            })
-        })
+    //     this.data.forEach(function (tagset) {
+    //         tagset.forEach(function (tag) {
+    //             a.set(tag, a.get(tag) + 1) //一定定义过
+    //         })
+    //     })
 
-        const x: Array<string> = Array.from(this.span)
-        const y = new Array<number>()
-        for (const frequency of a.values()) {
-            y.push(frequency)
-        }
+    //     const x: Array<string> = Array.from(this.span)
+    //     const y = new Array<number>()
+    //     for (const frequency of a.values()) {
+    //         y.push(frequency)
+    //     }
 
-        return { x, y }
+    //     return { x, y }
 
-    }
-    draw(whiteboard: HTMLElement) {
-        // 基于准备好的dom，初始化echarts实例
-        const myChart = echarts.init(whiteboard);
-
-        // 指定图表的配置项和数据
-        const option = {
-            //1、标题
-            title: {
-                text: this.name,
-            },
-            //2、提示
-            tooltip: {
-                //axis坐标轴触发(柱状图、折线图)、item数据项触发(散点图、饼图)
-                trigger: "axis",
-            },
-            //3、图例：代表有几条线
-            legend: {
-                //series里面如果有name值，则legend里面的data可以删掉
-                //data:['销量','进货']
-            },
-            //4、工具：可以另存为图片
-            toolbox: {
-                feature: {
-                    saveAsImage: {},
-                },
-            },
-            //1、大小
-            grid: {
-                //举例DOM元素边缘的大小
-                left: "10%",
-                right: "4%",
-                bottom: "3%",
-                //代表是否显示刻度标签
-                containLabel: true,
-            },
-            xAxis: {
-                type: "category",
-                boundaryGap: "true", //代表离y轴线有一段举例
-                data: this.drawData().x
-            },
-            yAxis: {
-                type: "value",
-            },
-
-            //图表类型数据配置
-            series: [
-                {
-                    name: "数量",
-                    type: "line",
-                    data: this.drawData().y
-                }
-            ],
-        };
-
-        // 使用刚指定的配置项和数据显示图表。
-        myChart.setOption(option);
-    }
-    //五：处理：排序、筛选、分组、视图
+    // }
 
 
 
 }
 
-//测试代码
-function MultiSelectColumnTest() {
-    const c1 = new MultiSelectColumn("类型");
-    c1.addRow();
-    c1.addRow();
 
-    c1.addItem(1, "算法")
-    c1.addItem(1, "计算机")
-
-    console.log(c1.span)
-    console.log(c1.data[1])
-    console.log("预期结果为Set集合的['算法','计算机']")
-}
-
-
-export { MultiSelectColumn, UrlColumn, EmailColumn }  //ts默认的导出方式是node.js的导出，如何将其设置为es6？
+export { MultiSelectColumn, UrlColumn, EmailColumn } 

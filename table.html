@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="zh">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <script src="./导入文件/vue.global.js"></script>
+    <script src="./导入文件/echarts.js"></script>
+    <link rel="stylesheet" href="./导入文件/bootstrap.css">
+  </head>
+  <body>
+    <div id="app">
+      <h1>DB数据库表格</h1> 
+      <div>筛选：
+        <span v-for="tag in column.span">
+          <button @click="column.filter.addFilter('包含',tag)">{{tag}}</button>
+          <button @click="column.deleteSpan(tag)">×</button>
+        </span>
+      </div> 
+      <div>分组：按照标签类型分组</div>
+      <div>排序 <button>升序</button><button>降序</button></div>
+      <div>搜索：<input type="text" v-model="searchRowWord"></div> 
+      <table class="table table-bordered" v-for="map in column.searchResult(searchRowWord)">
+        <thead>
+          <tr>
+            <th>{{map[0]}}</th>
+            <th>{{column.name}}</th>
+            <th><button @click="column.addRow(map[0])">添加行</button></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="index in map[1]">
+            <td>
+              <button>{{index}}</button>
+              <button @click="column.deleteRow(index)">×</button>
+            </td>
+            <td>
+              <span v-for="tag in column.data[index]">
+                <button>{{tag}}</button>
+                <button @click="column.deleteItem(index,tag)">×</button>
+              </span>
+            </td>
+            <td>
+              <input type="text" v-model="searchSpanWord" />
+              <button @click="column.addItem(index,searchSpanWord)">添加</button>
+              <button
+                v-for="tag in column.searchSpan(searchSpanWord)"
+                @click="column.addItem(index,tag)"
+              >
+                {{tag}}
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <div ref="whiteboard" style="width: 600px; height: 400px"></div>      
+    </div>
+  </body>
+  <script type="module">
+    import { MultiSelectColumn } from "./table.js";
+    Vue.createApp({
+      data() {
+        return {
+          column: new MultiSelectColumn("多选类型"),
+          searchSpanWord:"",
+          searchRowWord: "",
+        };
+      },
+      watch: {
+        column: {
+          //深度监听，可监听到对象、数组的变化
+          handler(val, oldVal) {
+            this.column.draw(this.$refs.whiteboard)
+          },
+          deep: true
+        }
+      },
+      mounted() {
+        this.column.addRow("算法");
+        this.column.addRow("计算机");
+        this.column.addRow("你好");
+
+        this.column.addItem(1, "算法");
+        this.column.addItem(1, "计算机");
+        this.column.addItem(1, "算术");
+        this.column.addItem(2, "计算机");
+        this.column.addItem(2, "算术");
+      },
+    }).mount("#app");
+  </script>
+</html>

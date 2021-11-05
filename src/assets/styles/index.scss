@@ -1,0 +1,26 @@
+@charset 'UTF-8';
+
+@import "./common/function";
+@import "./common/mixin";
+@import "./common/common";
+@import "./common/diy-iview";
+@import "./views/ddcat-skin";
+@import "./views/error";
+// 第三方css
+@import "~view-design/dist/styles/iview.css";
+@import "~overlayscrollbars/css/OverlayScrollbars.css";
+@import "~vue-virtual-scroller/dist/vue-virtual-scroller.css";
+@import "~@egova/egova-ddcat/dist/index.css";
+html,
+body,
+#app {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    color: var(--text-color, unset);
+}
+#app {
+    font-size: 0.14rem;
+    font-family: PingFangSC, PingFangSC-Regular;
+    overflow: hidden;
+}

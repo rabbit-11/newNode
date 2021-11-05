@@ -1,43 +1,75 @@
 <template>
-  <table class="table table-bordered">
-        <thead>
-            <tr>
-                <th>行数</th>
-                <th>{{urlColumn.name}}</th>
-                <th>{{emailColumn.name}}</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr v-for="(item, index) in urlColumn.data" :key="index">
-                <td>
-                    <button>{{index+1}}</button>
-                    <button @click="urlColumn.deleteRow(index);emailColumn.deleteRow(index)">×</button>
-                </td>
-                <td>
-                    <input v-if="urlColumn.isEdit[index]" type="text" v-model="urlColumn.data[index]" 
-                        @blur="urlColumn.editRow(index)">
-                    <a v-else :href="(urlColumn.data[index].indexOf('http://') === -1 ? 'http://' : '') + urlColumn.data[index]" target="_blank">{{ urlColumn.data[index] }}</a>
-                    <button v-if="!urlColumn.isEdit[index]" @click="urlColumn.isEdit[index] = !urlColumn.isEdit[index]">编辑</button>
-                </td>
-                <td>
-                    <input type="text" v-model="emailColumn.data[index]">
-                </td>
-                <!-- <td>
-                    <input type="text" v-model="searchWord" />
-                    <button @click="column.addItem(index,searchWord)">添加</button>
-                    <button
-                        v-for="(tag, index) in column.searchSpan(searchWord)"
-                        @click="column.addItem(index,tag)"
-                        :key="index"
-                    >
-                        {{tag}}
-                    </button>
-                </td> -->
-            </tr>
-        </tbody>
-    </table>
-    <button @click="urlColumn.addRow();emailColumn.addRow();">添加行</button>
-    <div ref="whiteboard" style="width: 600px; height: 400px"></div>
+    <div><button @click="urlColumn.addRow();emailColumn.addRow();">添加行</button></div>
+    <div>
+        <table class="table table-bordered" border="1">
+            <thead>
+                <tr>
+                    <th>行数</th>
+                    <th>{{urlColumn.name}}</th>
+                    <th>{{emailColumn.name}}</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="(item, index) in urlColumn.filter.filterResult(urlColumn.data)" :key="index">
+                    <td>
+                        <button>{{item+1}}</button>
+                        <button @click="urlColumn.deleteRow(item);emailColumn.deleteRow(item)">×</button>
+                    </td>
+                    <td>
+                        <input v-if="urlColumn.isEdit[item]" type="text" v-model="urlColumn.data[item]" @blur="urlColumn.editRow(item)">
+                        <a v-else :href="(urlColumn.data[item].indexOf('http://') === -1 || urlColumn.data[item].indexOf('https://') === -1 ? 'http://' : '') + urlColumn.data[item]" target="_blank">{{ urlColumn.data[item] }}</a>
+                        <button v-if="!urlColumn.isEdit[item]" @click="urlColumn.isEdit[item] = !urlColumn.isEdit[item]">编辑</button>
+                    </td>
+                    <td>
+                        <input type="text" v-model="emailColumn.data[item]" @blur="emailColumn.editRow(item)">
+                        <button v-if="emailColumn.isEmail[item]">@</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div><h3>筛选</h3></div>
+    <div>
+        <button @click="filterType = !filterType">{{ filterType ? "包含" : "不包含" }}</button>
+        <input type="text" placeholder="filter" v-model="filterWord">
+        <button @click="urlColumn.filter.addFilter(filterType ? '包含' : '不包含',filterWord)">添加</button>
+    </div>
+    <div v-for="(item, index) in urlColumn.filter.filters" :key="index">
+        <button>{{ item[0] }}</button>
+        <button>{{ item[1] }}</button>
+        <button @click="urlColumn.filter.deleteFilter(index)">×</button>
+    </div>
+    <div><h3>分组</h3></div>
+    <div>
+        <table class="table table-bordered" border="1" v-for="(map,mapIndex) in urlColumn.groupResult()" :key="mapIndex">
+            <thead>
+                <tr>
+                    <th>{{map[0]}}</th>
+                    <th>{{urlColumn.name}}</th>
+                    <th>{{emailColumn.name}}</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="(item, index) in map[1]" :key="index">
+                    <td>
+                        <button>{{item+1}}</button>
+                        <button @click="urlColumn.deleteRow(item);emailColumn.deleteRow(item)">×</button>
+                    </td>
+                    <td>
+                        <input v-if="urlColumn.isEdit[item]" type="text" v-model="urlColumn.data[item]" @blur="urlColumn.editRow(item)">
+                        <a v-else :href="(urlColumn.data[item].indexOf('http://') === -1 || urlColumn.data[item].indexOf('https://') === -1 ? 'http://' : '') + urlColumn.data[item]" target="_blank">{{ urlColumn.data[item] }}</a>
+                        <button v-if="!urlColumn.isEdit[item]" @click="urlColumn.isEdit[item] = !urlColumn.isEdit[item]">编辑</button>
+                    </td>
+                    <td>
+                        <input type="text" v-model="emailColumn.data[item]" @blur="emailColumn.editRow(item)">
+                        <button v-if="emailColumn.isEmail[item]">@</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- <v-chart class="my-chart" :options="bar" style="width: 600px; height: 400px"></v-chart> --> 
 </template>
 
 <script lang="ts">
@@ -50,7 +82,8 @@ import { UrlColumn, EmailColumn } from "../common/table/index";
 export default class HelloWorld extends Vue {
     public urlColumn = new UrlColumn("url类型");
     public emailColumn = new EmailColumn("email类型")
-    public searchWord = "";
+    public filterWord = "";
+    public filterType = true;
 
     created() {
     //   this.$watch('column', () => {
@@ -75,7 +108,7 @@ export default class HelloWorld extends Vue {
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
+<style lang="scss" scoped>
 h3 {
   margin: 40px 0 0;
 }
@@ -90,10 +123,18 @@ li {
 a {
   color: #42b983;
 }
-input {
-    border: none;
-    padding: none;
-    text-align: center;
-    background-color: white;
+div {
+    margin-bottom: 5px;
+}
+table{
+    margin: auto;
+
+    input {
+        border: none;
+        padding: none;
+        text-align: center;
+        background-color: white;
+        outline: none;
+    }
 }
 </style>

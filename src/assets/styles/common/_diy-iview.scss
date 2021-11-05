@@ -1,0 +1,464 @@
+/* --------------------------------------------
+         自定义的iview的各种组件的样式
+---------------------------------------------*/
+.diy-form {
+    margin-bottom: 0.1rem;
+    .ivu-form-item {
+        margin-bottom: 0.2rem;
+        .ivu-form-item-label {
+            padding: 0.1rem 0.12rem 0.1rem 0;
+            color: var(--text-color, unset);
+            font-size: 0.14rem;
+        }
+        .ivu-form-item-content {
+            line-height: 0.32rem;
+            font-size: 0.12rem;
+            .ivu-date-picker,
+            .ivu-input-number {
+                width: 100%;
+            }
+        }
+    }
+}
+/* --------------------------------------------
+         自定义的iview的input组件的样式
+---------------------------------------------*/
+.diy-input {
+    &:not(.ivu-input-type-textarea) {
+        .ivu-input {
+            height: 0.32rem;
+            line-height: 1.5 !important;
+            padding: 0.04rem 0.07rem;
+            font-size: 0.12rem;
+            border-radius: 0.04rem;
+            color: var(--text-color, unset);
+            background-color: var(--input-bg, #fff);
+            border-color: var(--input-border-color, #fff);
+            &:hover {
+                border-color: var(--input-hover-border-color, #fff);
+            }
+        }
+    }
+
+    i {
+        font-size: 0.16rem;
+        line-height: 0.32rem;
+    }
+}
+.plate-picker,
+.camera-selector,
+.brand-selector,
+.ivu-date-picker {
+    @extend .diy-input;
+}
+.diy-textarea {
+    .ivu-input {
+        color: var(--text-color, unset);
+        background-color: var(--input-bg, #fff);
+        border-color: var(--input-border-color, #fff);
+        &:hover {
+            border-color: var(--input-hover-border-color, #fff);
+        }
+    }
+}
+/* --------------------------------------------
+         自定义的iview的select组件的样式
+---------------------------------------------*/
+.diy-select {
+    font-size: 0.14rem;
+    .ivu-select-selection {
+        height: 0.32rem;
+        color: var(--text-color, unset);
+        background-color: var(--input-bg, #fff);
+        border-color: var(--input-border-color, #fff);
+        &:hover {
+            border-color: var(--input-hover-border-color, #fff);
+        }
+        .ivu-select-placeholder,
+        .ivu-select-selected-value {
+            height: 0.3rem;
+            line-height: 0.3rem;
+            font-size: 0.12rem;
+            padding-left: 0.08rem;
+            padding-right: 0.24rem;
+        }
+        .ivu-select-input {
+            height: 0.32rem;
+            line-height: 0.32rem;
+            padding: 0 0.24rem 0 0.08rem;
+        }
+    }
+}
+.diy-select-pop {
+    background-color: var(--pop-bg, #fff);
+    .ivu-select-item {
+        color: var(--text-color, unset);
+        &:hover {
+            background-color: var(--item-hover-color, #f3f3f3);
+        }
+    }
+    .ivu-select-item-focus {
+        background-color: var(--item-hover-color, #f3f3f3);
+    }
+}
+/* --------------------------------------------
+         自定义的iview的table组件的样式
+---------------------------------------------*/
+.diy-table {
+    width: 100%;
+    height: 100%; // TODO: 为解决 数据源详情 =》字段详情弹窗中，表格超出的问题临时设置的，后续应该去掉
+    .ivu-table {
+        @include flex(column, flex-start, flex-start);
+        color: var(--text-color, unset);
+        font-size: 0.16rem;
+        height: 100%;
+        background-color: var(--page-bg, #fff);
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        .ivu-table-body {
+            flex: 1;
+            width: 100%;
+            height: 100%;
+            overflow-y: auto;
+            overflow-x: hidden;
+            background-color: var(--table-header-bg-color, unset);
+            color: var(--text-color, unset);
+        }
+        td {
+            background-color: var(--page-bg, #fff);
+        }
+        td,
+        th {
+            border-color: var(--input-border-color, unset);
+        }
+        .ivu-table-row-hover td {
+            // background-color: #f3fbfe;
+            background-color: var(--item-hover-color, #f3f3f3);
+        }
+    }
+    .ivu-table-header {
+        width: 100%;
+        color: #000;
+    }
+
+    .ivu-table th {
+        background-color: var(--header-bg, unset);
+        color: var(--table-header-text-color, unset);
+        font-weight: 600;
+    }
+
+    .ivu-table:before {
+        content: none;
+    }
+}
+/* --------------------------------------------
+         自定义的iview的modal组件的样式
+---------------------------------------------*/
+.diy-modal {
+    .ivu-modal-content {
+        width: 100%;
+        height: 100%;
+        border-radius: 0;
+        background-color: var(--modal-body-bg, #fff);
+        .ivu-modal-close {
+            .ivu-icon {
+                color: #bebfc0;
+            }
+        }
+        .ivu-modal-header {
+            width: 100%;
+            padding: 0.1rem 0.16rem;
+            background-color: var(--header-bg, unset);
+            border-color: var(--header-bg, unset);
+            .ivu-modal-header-inner,
+            p {
+                font-size: 0.16rem;
+                font-family: PingFangSC, PingFangSC-Medium;
+                font-weight: 550;
+                color: var(--text-color, unset);
+            }
+        }
+        .ivu-modal-body {
+            height: calc(100% - 0.57rem);
+            padding: 0.16rem;
+        }
+        .ivu-modal-footer {
+            background-color: var(--header-bg, unset);
+            color: var(--text-color, unset);
+            border-color: var(--header-bg, unset);
+            padding: 0.1rem 0.16rem;
+            border-radius: 0;
+            box-shadow: 0 -0.01rem 0 0 rgba(0, 0, 0, 0.12);
+        }
+    }
+}
+/* --------------------------------------------
+            * 修改spin加载动画样式 *
+---------------------------------------------*/
+.ivu-spin {
+    z-index: 999;
+    .spin-icon-load {
+        animation: ani-demo-spin 1s linear infinite;
+        &:after {
+            content: url("~@/assets/images/loading.png");
+            background-size: 50px 50px;
+            width: 50px;
+            height: 50px;
+        }
+    }
+}
+/* --------------------------------------------
+            * 修改timeline组件样式 *
+---------------------------------------------*/
+.diy-timeline {
+    height: 100%;
+    .timeline-item {
+        margin-bottom: 0.05rem;
+        .ivu-timeline-item {
+            .item-content-box {
+                height: 100%;
+            }
+            .ivu-timeline-item-tail {
+                display: block;
+                border-left: 1px solid #3d7fe5;
+            }
+            .ivu-timeline-item-head {
+                background-color: #3d7fe5;
+            }
+            .item-title {
+                cursor: pointer;
+                color: #2676cf;
+            }
+            .ivu-timeline-item-content {
+                height: 100%;
+                .item-content-box-row {
+                    margin-top: 0.05rem;
+                    .item-label {
+                        color: #333333;
+                        font-weight: bold;
+                    }
+                    .item-img {
+                        width: 95%;
+                        height: 2rem;
+                        cursor: pointer;
+
+                        &:hover {
+                            border: 1px solid red;
+                        }
+
+                        &.active {
+                            border: 1px solid red;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+.diy-btn {
+    width: 0.88rem;
+    background: #ffffff;
+    border: 1px solid #d9d9d9;
+    border-radius: 3px;
+}
+.diy-primary-btn:not(.ivu-btn-ghost) {
+    width: 0.88rem;
+    background: var(--primary-btn-bg, unset);
+    border-color: var(--primary-btn-bg, unset);
+    border-radius: 2px;
+}
+/* --------------------------------------------
+            * 修改input-number组件样式 *
+---------------------------------------------*/
+.diy-input-number {
+    height: 0.32rem;
+    line-height: 0.32rem;
+    padding: 0 0.07rem;
+    border-radius: 0.04rem;
+    background-color: var(--input-bg, #fff);
+    .ivu-input-number-handler-wrap {
+        width: 0.22rem;
+        border-radius: 0 0.04rem 0.04rem 0;
+        .ivu-input-number-handler {
+            height: 0.16rem;
+            background-color: var(--input-bg, #fff);
+            color: var(--text-color, unset);
+        }
+        .ivu-input-number-handler-down-inner,
+        .ivu-input-number-handler-up-inner {
+            width: 0.12rem;
+            height: 0.12rem;
+            line-height: 0.12rem;
+            font-size: 0.14rem;
+            right: 0.05rem;
+        }
+    }
+    .ivu-input-number-input-wrap {
+        height: 0.32rem;
+        overflow: visible;
+    }
+    .ivu-input-number-input {
+        height: 0.32rem;
+        line-height: 0.32rem;
+        padding: 0 0.07rem;
+        border-radius: 0.04rem;
+        color: var(--text-color, unset);
+        background-color: var(--input-bg, #fff);
+        border-color: var(--input-border-color, #fff);
+    }
+}
+
+.diy-page {
+    text-align: right;
+    margin-top: 0.1rem;
+    color: var(--text-color, unset);
+    .ivu-page-total {
+        height: 0.32rem;
+        line-height: 0.32rem;
+        margin-right: 0.1rem;
+    }
+    .ivu-icon,
+    .ivu-page-next,
+    .ivu-page-prev,
+    input {
+        color: var(--text-color, unset);
+        background-color: var(--page-bg, unset);
+        border-color: var(--input-border-color, unset);
+    }
+    .ivu-select-selected-value {
+        color: var(--text-color, unset);
+    }
+    .ivu-select-selection {
+        background-color: var(--page-bg, unset);
+        border-color: var(--input-border-color, unset);
+    }
+    .ivu-select-dropdown {
+        background-color: var(--pop-bg, #fff);
+        .ivu-select-item {
+            color: var(--text-color, unset);
+            &:hover,
+            &.ivu-select-item-selected {
+                background-color: var(--item-hover-color, #f3f3f3);
+            }
+        }
+    }
+    .ivu-page-item {
+        min-width: 0.32rem;
+        height: 0.32rem;
+        line-height: 0.3rem;
+        margin-right: 0.04rem;
+        border-radius: 0.04rem;
+
+        > a {
+            margin: 0 0.06rem;
+        }
+    }
+
+    .ivu-page-item-active,
+    .ivu-page-item-active:hover {
+        background-color: var(--primary-btn-bg, unset);
+        border: none;
+        a {
+            color: white;
+        }
+    }
+    .ivu-page-item-jump-next,
+    .ivu-page-item-jump-prev,
+    .ivu-page-next,
+    .ivu-page-prev {
+        min-width: 0.32rem;
+        height: 0.32rem;
+        border-radius: 0.04rem;
+        line-height: 0.3rem;
+
+        > a {
+            font-size: 0.14rem;
+
+            .ivu-icon {
+                margin-top: 0;
+            }
+        }
+    }
+
+    .ivu-page-options {
+        margin-left: 0.15rem;
+
+        &-sizer {
+            margin-right: 0.1rem;
+
+            .ivu-select {
+                font-size: 0.14rem;
+
+                .ivu-select-selection {
+                    height: 0.32rem;
+                    border-radius: 0.04rem;
+
+                    .ivu-select-selected-value {
+                        height: 0.3rem;
+                        line-height: 0.3rem;
+                        padding: 0 0.25rem;
+                        padding-left: 0.24rem;
+                    }
+
+                    .ivu-icon {
+                        right: 0.08rem;
+                        font-size: 0.14rem;
+                    }
+                }
+            }
+        }
+
+        &-elevator {
+            height: 0.32rem;
+            line-height: 0.32rem;
+
+            input {
+                height: 0.32rem;
+                padding: 0.04rem 0.07rem;
+                font-size: 0.12rem;
+                margin: 0 0.08rem;
+                width: 0.5rem;
+            }
+        }
+    }
+}
+
+.diy-radio-button {
+    height: 0.32rem;
+    line-height: 0.3rem;
+    padding: 0 0.15rem;
+    font-size: 0.12rem;
+}
+.diy-dropdown {
+    color: var(--text-color, unset);
+}
+.diy-dropdown-transfer {
+    background-color: var(--pop-bg, #fff);
+    .ivu-dropdown-item {
+        color: var(--text-color, unset);
+        &:hover {
+            background-color: var(--item-hover-color, #f3f3f3);
+        }
+    }
+}
+.diy-tag {
+    background-color: var(--tag-bg, unset);
+    color: var(--text-color, unset);
+    a,
+    span,
+    .ivu-icon-ios-close {
+        color: var(--text-color, unset);
+    }
+}
+.diy-steps {
+    .ivu-steps-title,
+    .ivu-steps-head {
+        background-color: var(--page-bg, unset);
+        color: var(--text-color, unset) !important;
+    }
+    .ivu-steps-title::before {
+        color: var(--text-color, unset) !important;
+        border-color: var(--text-color, unset);
+    }
+}

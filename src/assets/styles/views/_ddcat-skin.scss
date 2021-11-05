@@ -1,0 +1,14 @@
+.data-source,
+.data-source-list {
+    background-color: var(--page-color, unset);
+}
+.data-source-item .table-item:hover,
+.data-source-item .table-item.selected,
+.data-source-item .data-source-item-content:hover {
+    background-color: var(--item-hover-color, unset) !important;
+}
+.data-source-item {
+    i {
+        color: var(--text-color, unset);
+    }
+}
